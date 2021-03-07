@@ -1,6 +1,8 @@
 package org.example.ch2;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class MyLinkedList<T> implements Iterable<T> {
     private int size;//this for reduce time complex from O(N) to O(1).
@@ -119,14 +121,42 @@ public class MyLinkedList<T> implements Iterable<T> {
 
     private class MyListIterator<T> implements Iterator<T> {
 
+        private Node current = head.next;
+        private int expectedModCount = modCount;
+        private boolean okToRemove = false;
+
         @Override
         public boolean hasNext() {
-            return false;
+            return current != rear;
         }
 
         @Override
         public T next() {
-            return null;
+            if (expectedModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+
+            if(!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            T data = (T) current.data;
+            current = current.next;
+            okToRemove = true;
+            return data;
+        }
+
+        public void remove() {
+            if (expectedModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+
+            if (!okToRemove) {
+                throw new IllegalStateException();
+            }
+            MyLinkedList.this.remove(current.previous);
+            expectedModCount++;
+            okToRemove = false;
         }
     }
 }
