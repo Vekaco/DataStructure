@@ -98,7 +98,7 @@ public class MyArrayList<T> implements Iterable<T> {
         return new ArrayListIterator();
     }
 
-    class ArrayListIterator implements Iterator {
+    private class ArrayListIterator implements Iterator {
 
         private int current =0;
         @Override
@@ -121,3 +121,4 @@ public class MyArrayList<T> implements Iterable<T> {
         }
     }
 }
+
